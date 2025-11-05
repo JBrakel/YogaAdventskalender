@@ -1,189 +1,190 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Adventskalender 2025</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Yoga Adventskalender 2025</title>
 <style>
   body {
-    background: #faf8f3;
+    margin:0;
     font-family: "Segoe UI", sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0;
-    padding: 2rem;
-  }
-  h1 {
-    text-align: center;
-    color: #b22222;
-    margin-bottom: 1rem;
-  }
+    background: linear-gradient(to bottom, #ffefba, #ff7e5f); /* warm golden-orange gradient */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    }
+  .page { padding:2rem; display:flex; flex-direction:column; align-items:center; }
+
+  h1 { color:#b22222; margin-bottom:1rem; }
+
   .calendar {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-gap: 10px;
-    max-width: 1000px;
-    width: 100%;
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:10px;
+    max-width:1000px;
+    width:100%;
   }
-    .day {
-    position: relative;
-    width: 100%;
-    padding-bottom: 100%; /* square cell */
-    background: #ddd;
-    border-radius: 10px;
-    overflow: hidden;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    transition: transform 0.2s;
-}
-  .day:hover {
-    transform: scale(1.03);
+  .day {
+    position:relative;
+    width:100%;
+    padding-bottom:100%;
+    background:#ddd;
+    border-radius:10px;
+    overflow:hidden;
+    cursor:pointer;
+    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+    transition:transform .15s;
+  }
+  .day:hover{ transform:scale(1.03); }
+  .day img{
+    position:absolute; top:0; left:0; width:100%; height:calc(100% - 25px);
+    object-fit:contain; background:#e6e6e6;
+  }
+  .day-number{
+    position:absolute; bottom:0; left:0; width:100%; height:25px; line-height:25px;
+    text-align:center; font-weight:bold; color:#b22222;
   }
 
-    .day img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: calc(100% - 25px); /* leaves room at bottom */
-    object-fit: contain;        /* keeps entire image visible */
-    background: #faf8f3;
-}
-    .day-number {
-        position: absolute;
-        bottom: 0;      /* stick to bottom */
-        left: 0;
-        width: 100%;
-        height: 25px;
-        line-height: 25px;  /* center vertically */
-        font-weight: bold;
-        color: #b22222;
-        text-align: center;
-    }
-  .locked::after {
-    content: "🔒";
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 2rem;
-    color: white;
-    text-shadow: 0 0 5px black;
+  /* FULLSCREEN PASSWORD OVERLAY */
+  #overlay {
+    position:fixed; inset:0; z-index:9999;
+    display:flex; align-items:center; justify-content:center;
+    background:#000000cc; /* dark semi-transparent */
   }
+  #pwbox {
+    background:#fff; padding:24px; border-radius:10px; width:320px; text-align:center;
+    box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  }
+  #pwbox h2{ margin:0 0 8px 0; color:#b22222; }
+  #pwbox input{ width:100%; padding:8px; margin:8px 0; box-sizing:border-box; }
+  #pwbox button{ padding:8px 12px; background:#b22222; color:white; border:none; border-radius:6px; cursor:pointer; }
+  #err{ color:#b22222; min-height:18px; margin-top:8px; }
+
+  /* hide content container until unlocked (we don't create it until unlock) */
 </style>
 </head>
 <body>
-<script>
-window.onload = function() {
-    const correct = "namaste25";
-    const entered = prompt("Bitte Passwort eingeben:");
 
-    if (entered !== correct) {
-        document.body.innerHTML = `
-            <h2 style="text-align:center; margin-top: 20%; color:#b22222;">
-                Access denied 🛑<br>Falsches Passwort.
-            </h2>`;
-        throw new Error("Access denied");
-    }
-    // If correct, the rest of the page (calendar) will load normally
-};
-</script>
+<!-- FULLSCREEN PASSWORD UI (always there) -->
+<div id="overlay" aria-hidden="false">
+  <div id="pwbox" role="dialog" aria-modal="true" aria-labelledby="pwtitle">
+    <h2 id="pwtitle">Passwort erforderlich</h2>
+    <input id="password-input" type="password" placeholder="Passwort" autocomplete="off" />
+    <button id="password-button">Öffnen</button>
+    <div id="err"></div>
+  </div>
+</div>
 
-<h1>Yoga Adventskalender 2025 🎅</h1>
-<div class="calendar" id="calendar"></div>
+<!-- PAGE CONTENT container (will be created/filled only after correct password) -->
+<div id="page-root" style="display:none"></div>
 
 <script>
-const youtubeLinks = [
-  "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=dJxnU9sOh6Q",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s",
-    "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s"
+/* ===== CONFIG ===== */
+const CORRECT = "glühwein"; // change as needed
+
+/* ===== DOOR DATA: keep pairs together ===== */
+const doors = [
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day2.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
+  { img: "images/day1.jpg", link: "https://www.youtube.com/watch?v=s6Jazu4oXls&t=38s" },
 ];
 
-const imageUrls = [
-  "images/day1.jpg",
-  "images/day2.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg",
-  "images/day1.jpg"
-];
+/* ===== password handler ===== */
+const overlay = document.getElementById('overlay');
+const input = document.getElementById('password-input');
+const button = document.getElementById('password-button');
+const err = document.getElementById('err');
 
-const lockedImage = "images/locked.jpg"; // your "closed door" image
+function showError(msg){
+  err.textContent = msg;
+  input.focus();
+}
 
-// Calendar setup
-const calendar = document.getElementById("calendar");
+button.addEventListener('click', tryPassword);
+input.addEventListener('keydown', (e)=> { if(e.key === 'Enter') tryPassword(); });
 
-<!--const today = new Date();-->
-const today = new Date(2025, 11 , 24);
-
-const currentDay = today.getMonth() === 11 ? today.getDate() : 0; // December = month 11
-
-for (let i = 1; i <= 24; i++) {
-  const cell = document.createElement("div");
-  cell.classList.add("day");
-
-  const num = document.createElement("div");
-  num.classList.add("day-number");
-  num.textContent = i;
-  cell.appendChild(num);
-
-  const img = document.createElement("img");
-
-  if (i <= 24) {
-    if (i <= currentDay && today.getFullYear() === 2025 && today.getMonth() === 11) {
-      // unlocked door
-      img.src = imageUrls[i - 1];
-      cell.addEventListener("click", () => window.open(youtubeLinks[i - 1], "_blank"));
-    } else {
-      // locked door
-      img.src = lockedImage;
-      cell.classList.add("locked");
-    }
+function tryPassword(){
+  const val = input.value || "";
+  if(val === CORRECT){
+    unlockAndInit();
   } else {
-    img.src = "images/empty.jpg"; // optional filler image
+    showError("Falsches Passwort");
+    input.value = "";
   }
+}
 
-  cell.appendChild(img);
-  calendar.appendChild(cell);
+/* ===== unlock: remove overlay and INIT calendar AFTER correct pw ===== */
+function unlockAndInit(){
+  // hide overlay completely
+  overlay.style.display = 'none';
+  // create page content and calendar now (so images/links are NOT loaded before)
+  const page = document.getElementById('page-root');
+  page.style.display = 'block';
+  page.innerHTML = `
+    <div class="page">
+      <h1>Yoga Adventskalender 2025 🎅</h1>
+      <div class="calendar" id="calendar"></div>
+    </div>
+  `;
+  initCalendar();
+}
+
+/* ===== calendar builder called only after unlock ===== */
+function initCalendar(){
+  const calendar = document.getElementById('calendar');
+  const lockedImage = "images/locked.jpg";
+
+  // compute currentDay (uses real date)
+<!--  const today = new Date();-->
+  const today = new Date(2025, 11 , 24);
+
+  const currentDay = (today.getMonth() === 11 && today.getFullYear() === 2025) ? Math.min(today.getDate(),24) : 0;
+  // If you want to test, set currentDay manually, e.g. const currentDay = 24;
+
+  for(let i=1; i<=24; i++){
+    const cell = document.createElement('div');
+    cell.className = 'day';
+
+    const num = document.createElement('div');
+    num.className = 'day-number';
+    num.textContent = i;
+
+    const img = document.createElement('img');
+
+    // ensure we have a doors[i-1]; if missing, show locked placeholder
+    const entry = doors[i-1];
+    if(entry && i <= currentDay){
+      img.src = entry.img;
+      cell.addEventListener('click', ()=> window.open(entry.link, '_blank'));
+    } else {
+      img.src = lockedImage;
+      cell.classList.add('locked');
+    }
+
+    cell.appendChild(img);
+    cell.appendChild(num);
+    calendar.appendChild(cell);
+  }
 }
 </script>
 
