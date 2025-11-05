@@ -74,13 +74,20 @@
 </head>
 <body>
 <script>
+window.onload = function() {
     const correct = "namaste25";
-    let entered = prompt("Enter the secret passphrase:");
+    const entered = prompt("Bitte Passwort eingeben:");
+
     if (entered !== correct) {
-      document.body.innerHTML = "<h2 style='text-align:center; margin-top: 20%; color:#b22222;'>Access denied 🛑</h2>";
-      throw new Error("Access denied"); // stop the rest of the scripts
+        document.body.innerHTML = `
+            <h2 style="text-align:center; margin-top: 20%; color:#b22222;">
+                Access denied 🛑<br>Falsches Passwort.
+            </h2>`;
+        throw new Error("Access denied");
     }
-  </script>
+    // If correct, the rest of the page (calendar) will load normally
+};
+</script>
 
 <h1>Yoga Adventskalender 2025 🎅</h1>
 <div class="calendar" id="calendar"></div>
