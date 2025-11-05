@@ -73,6 +73,14 @@
 </style>
 </head>
 <body>
+<script>
+    const correct = "namaste25";
+    let entered = prompt("Enter the secret passphrase:");
+    if (entered !== correct) {
+      document.body.innerHTML = "<h2 style='text-align:center; margin-top: 20%; color:#b22222;'>Access denied 🛑</h2>";
+      throw new Error("Access denied"); // stop the rest of the scripts
+    }
+  </script>
 
 <h1>Yoga Adventskalender 2025 🎅</h1>
 <div class="calendar" id="calendar"></div>
