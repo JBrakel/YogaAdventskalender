@@ -8,13 +8,17 @@
   body {
     margin:0;
     font-family: "Segoe UI", sans-serif;
-    background: linear-gradient(to bottom, #ffefba, #ff7e5f); /* warm golden-orange gradient */
+    background: linear-gradient(to bottom, #1a2a6c, #0f2027); /* dark blue to near black */
     background-repeat: no-repeat;
     background-attachment: fixed;
     }
   .page { padding:2rem; display:flex; flex-direction:column; align-items:center; }
 
-  h1 { color:#b22222; margin-bottom:1rem; }
+  h1 {
+    color: #ffd700; /* golden/yellow for contrast on dark background */
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 5px #000; /* subtle glow for readability */
+}
 
   .calendar {
     display:grid;
@@ -24,25 +28,37 @@
     width:100%;
   }
   .day {
-    position:relative;
-    width:100%;
-    padding-bottom:100%;
-    background:#ddd;
-    border-radius:10px;
-    overflow:hidden;
-    cursor:pointer;
-    box-shadow:0 2px 5px rgba(0,0,0,0.2);
-    transition:transform .15s;
-  }
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    background: #888; /* darker gray for better contrast */
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* slightly stronger shadow */
+    transition: transform .15s;
+}
   .day:hover{ transform:scale(1.03); }
-  .day img{
-    position:absolute; top:0; left:0; width:100%; height:calc(100% - 25px);
-    object-fit:contain; background:#e6e6e6;
-  }
-  .day-number{
-    position:absolute; bottom:0; left:0; width:100%; height:25px; line-height:25px;
-    text-align:center; font-weight:bold; color:#b22222;
-  }
+  .day img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: calc(100% - 25px);
+    object-fit: contain;
+    background: #aaa; /* slightly darker than previous #e6e6e6 */
+}
+  .day-number {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 1px 1px 2px #000;
+}
 
   /* FULLSCREEN PASSWORD OVERLAY */
   #overlay {
@@ -155,8 +171,8 @@ function initCalendar(){
   const lockedImage = "images/locked.jpg";
 
   // compute currentDay (uses real date)
-<!--  const today = new Date();-->
-  const today = new Date(2025, 11 , 24);
+  const today = new Date();
+<!--  const today = new Date(2025, 11 , 6);-->
 
   const currentDay = (today.getMonth() === 11 && today.getFullYear() === 2025) ? Math.min(today.getDate(),24) : 0;
   // If you want to test, set currentDay manually, e.g. const currentDay = 24;
