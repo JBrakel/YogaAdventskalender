@@ -135,11 +135,11 @@ function initCalendar(){
   const lockedImage = "images/locked.jpg";
 
   // compute currentDay (uses real date)
-  // const today = new Date();
-  // const currentDay = (today.getMonth() === 11 && today.getFullYear() === 2025) ? Math.min(today.getDate(),24) : 0;
+  const today = new Date();
+  const currentDay = (today.getMonth() === 11 && today.getFullYear() === 2025) ? Math.min(today.getDate(),24) : 0;
 
-  const today = new Date(2025, 10 , 29);
-  const currentDay = (today.getMonth() === 10 && today.getFullYear() === 2025) ? Math.min(today.getDate(),24) : 0;
+  // const today = new Date(2025, 10 , 29);
+  // const currentDay = (today.getMonth() === 10 && today.getFullYear() === 2025) ? Math.min(today.getDate(),24) : 0;
 
   for(let i=1; i<=24; i++){
     const cell = document.createElement('div');
