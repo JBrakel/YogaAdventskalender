@@ -80,16 +80,6 @@
 </head>
 <body>
 
-<!-- FULLSCREEN PASSWORD UI (always there) -->
-<div id="overlay" aria-hidden="false">
-  <div id="pwbox" role="dialog" aria-modal="true" aria-labelledby="pwtitle">
-    <h2 id="pwtitle">Passwort erforderlich</h2>
-    <input id="password-input" type="password" placeholder="Passwort" autocomplete="off" />
-    <button id="password-button">Öffnen</button>
-    <div id="err"></div>
-  </div>
-</div>
-
 <!-- PAGE CONTENT container (will be created/filled only after correct password) -->
 <div id="page-root" style="display:none"></div>
 
@@ -125,34 +115,8 @@ const doors = [
   { img: "images/day24.jpg", link: "https://www.youtube.com/watch?v=Abv7M1sgNiU&t=387s" },
 ];
 
-/* ===== password handler ===== */
-const overlay = document.getElementById('overlay');
-const input = document.getElementById('password-input');
-const button = document.getElementById('password-button');
-const err = document.getElementById('err');
-
-function showError(msg){
-  err.textContent = msg;
-  input.focus();
-}
-
-button.addEventListener('click', tryPassword);
-input.addEventListener('keydown', (e)=> { if(e.key === 'Enter') tryPassword(); });
-
-function tryPassword(){
-  const val = input.value || "";
-  if(val === CORRECT){
-    unlockAndInit();
-  } else {
-    showError("Falsches Passwort");
-    input.value = "";
-  }
-}
-
 /* ===== unlock: remove overlay and INIT calendar AFTER correct pw ===== */
 function unlockAndInit(){
-  // hide overlay completely
-  overlay.style.display = 'none';
   // create page content and calendar now (so images/links are NOT loaded before)
   const page = document.getElementById('page-root');
   page.style.display = 'block';
@@ -171,11 +135,11 @@ function initCalendar(){
   const lockedImage = "images/locked.jpg";
 
   // compute currentDay (uses real date)
-  const today = new Date();
-  // const today = new Date(2025, 11 , 6);
+  // const today = new Date();
+  // const currentDay = (today.getMonth() === 11 && today.getFullYear() === 2025) ? Math.min(today.getDate(),24) : 0;
 
-  const currentDay = (today.getMonth() === 11 && today.getFullYear() === 2025) ? Math.min(today.getDate(),24) : 0;
-  // If you want to test, set currentDay manually, e.g. const currentDay = 24;
+  const today = new Date(2025, 10 , 29);
+  const currentDay = (today.getMonth() === 10 && today.getFullYear() === 2025) ? Math.min(today.getDate(),24) : 0;
 
   for(let i=1; i<=24; i++){
     const cell = document.createElement('div');
@@ -202,6 +166,8 @@ function initCalendar(){
     calendar.appendChild(cell);
   }
 }
+
+unlockAndInit();
 </script>
 
 </body>
