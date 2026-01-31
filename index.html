@@ -136,7 +136,19 @@ function initCalendar(){
 
   // compute currentDay (uses real date)
   const today = new Date();
-  const currentDay = (today.getMonth() === 11 && today.getFullYear() === 2025) ? Math.min(today.getDate(),24) : 0;
+  // const currentDay = (today.getMonth() === 11 && today.getFullYear() === 2025) ? Math.min(today.getDate(),24) : 0;
+
+  // last day of the calendar
+  const unlockAllDate = new Date(2025, 11, 24); // Dec 24, 2025
+
+  let currentDay;
+  if (today >= unlockAllDate) {
+    currentDay = 24; // unlock everything forever
+  } else if (today.getMonth() === 11 && today.getFullYear() === 2025) {
+    currentDay = Math.min(today.getDate(), 24);
+  } else {
+    currentDay = 0;
+  }
 
   // const today = new Date(2025, 10 , 29);
   // const currentDay = (today.getMonth() === 10 && today.getFullYear() === 2025) ? Math.min(today.getDate(),24) : 0;
